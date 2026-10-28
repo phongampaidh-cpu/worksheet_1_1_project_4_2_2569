@@ -1,0 +1,384 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ใบงานที่ 1.1 วิเคราะห์ตัวอย่างโครงงาน</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Prompt:wght@500;600;700&family=Sarabun:wght@400;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+<style>
+/* Layout: one printed-worksheet "sheet" on a cool paper ground; parts stack top to bottom, submit panel closes the sheet */
+:root{
+  --paper:#EEF2F7; --sheet:#FFFFFF; --ink:#1F2A44; --muted:#56627A; --line:#D3DBE6;
+  --field:#F8FAFC; --accent:#C2541A; --accent-soft:#FCE9DA; --focus:#2E6FB7; --ok:#2B7A57; --ok-soft:#E3F3EA; --warn:#A33B2B;
+  --f-display:'Prompt', Tahoma, sans-serif; --f-body:'Sarabun', Tahoma, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#0F1522; --sheet:#182133; --ink:#E8EDF5; --muted:#A4AFC3; --line:#2D3A52;
+  --field:#121A29; --accent:#F0955A; --accent-soft:#3A271B; --focus:#86B6EE; --ok:#6CC69C; --ok-soft:#173326; --warn:#F08A7A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0F1522; --sheet:#182133; --ink:#E8EDF5; --muted:#A4AFC3; --line:#2D3A52;
+  --field:#121A29; --accent:#F0955A; --accent-soft:#3A271B; --focus:#86B6EE; --ok:#6CC69C; --ok-soft:#173326; --warn:#F08A7A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:24px 48px}
+.sheet{max-width:880px;margin-inline:auto;background:var(--sheet);border:1px solid var(--line);border-radius:6px;padding:clamp(20px,4vw,48px);display:flex;flex-direction:column;gap:40px}
+h1,h2,h3{font-family:var(--f-display);font-weight:600;line-height:1.3;text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4.5vw,34px)}
+h2{font-size:22px;display:flex;gap:12px;align-items:baseline}
+h2 .tag{font-size:14px;letter-spacing:.06em;color:var(--accent);font-weight:600;white-space:nowrap}
+h3{font-size:17px}
+p{margin:0}
+.meta{font-size:14px;letter-spacing:.04em;color:var(--muted)}
+.muted{color:var(--muted)}
+header{display:flex;flex-direction:column;gap:16px}
+.info{display:grid;grid-template-columns:2fr 1fr 1fr;gap:12px}
+@media (max-width:560px){.info{grid-template-columns:1fr 1fr}.info .name{grid-column:1/-1}}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);min-width:0}
+input[type=text],textarea,select{font:inherit;font-size:16px;color:var(--ink);background:var(--field);border:1px solid var(--line);border-radius:6px;padding:8px 10px;width:100%;min-width:0}
+textarea{resize:vertical;min-height:72px}
+select{appearance:auto}
+input:focus-visible,textarea:focus-visible,select:focus-visible,button:focus-visible,.seg label:focus-within{outline:2px solid var(--focus);outline-offset:2px}
+.goals{background:var(--accent-soft);border-radius:6px;padding:14px 18px;display:flex;flex-direction:column;gap:6px}
+.goals ul{margin:0;padding-left:20px}
+section.part{display:flex;flex-direction:column;gap:20px;border-top:2px solid var(--ink);padding-top:20px}
+.q{display:flex;flex-direction:column;gap:10px}
+.q > p b{font-family:var(--f-display);font-weight:600;color:var(--accent);margin-right:6px}
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:6px 20px;border:1px dashed var(--line);border-radius:6px;padding:12px 16px;font-size:15px}
+.key span b{font-family:var(--f-display);color:var(--accent);margin-right:6px}
+.match{display:grid;grid-template-columns:1fr 120px;gap:8px 12px;align-items:center}
+.items{display:flex;flex-direction:column;gap:12px}
+.item{border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.item .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.item .row input[type=text]{flex:1 1 220px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.seg label{display:flex;align-items:center;gap:6px;padding:6px 14px;cursor:pointer;font-size:15px;white-space:nowrap}
+.seg label + label{border-left:1px solid var(--line)}
+.seg input{accent-color:var(--accent)}
+.seg label:has(input:checked){background:var(--accent-soft);font-weight:600}
+.grid2{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.g-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.3fr);border-top:1px solid var(--line)}
+.g-row:first-child{border-top:none}
+.g-row > *{padding:10px 12px;min-width:0}
+.g-row > * + *{border-left:1px solid var(--line)}
+.g-head{background:var(--field);font-family:var(--f-display);font-weight:600;font-size:15px}
+.g-row .lab{font-size:15px}
+.g-row textarea{min-height:64px}
+.g-row .sub{display:none;font-size:13px;color:var(--muted)}
+@media (max-width:640px){
+  .g-row{grid-template-columns:1fr}.g-row > * + *{border-left:none;padding-top:0}
+  .g-head{display:none}.g-row .lab{font-weight:600;background:var(--field)}.g-row .sub{display:block;margin-bottom:4px}
+}
+.tbl-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:middle}
+th{background:var(--field);font-family:var(--f-display);font-weight:600}
+td.num,th.num{text-align:center;width:120px}
+td.total{font-family:var(--f-display);font-weight:600;font-variant-numeric:tabular-nums;text-align:center}
+.order{display:grid;grid-template-columns:96px 1fr;gap:8px 12px;align-items:center}
+.order select.dup{border-color:var(--warn);color:var(--warn)}
+.hint{font-size:14px;color:var(--muted)}
+.hint.warn{color:var(--warn)}
+ol.lines{margin:0;padding-left:24px;display:flex;flex-direction:column;gap:8px}
+.roles{display:flex;flex-direction:column;gap:6px}
+.roles label{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:1px solid var(--line);border-radius:6px;cursor:pointer}
+.roles label:has(input:checked){background:var(--accent-soft);border-color:var(--accent)}
+.roles input{accent-color:var(--accent);margin-top:6px}
+.ai-extra{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:560px){.ai-extra{grid-template-columns:1fr}}
+.submit{background:var(--field);border:1px solid var(--line);border-radius:6px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.progress{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.bar{flex:1 1 200px;height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+button{font:inherit;font-family:var(--f-display);font-weight:600;font-size:16px;border-radius:6px;padding:10px 18px;cursor:pointer;border:1px solid var(--line);background:var(--sheet);color:var(--ink)}
+button.primary{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
+:root[data-theme="dark"] button.primary{color:#1A1208}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) button.primary{color:#1A1208}}
+.linkbox{display:flex;flex-direction:column;gap:10px;border:2px solid var(--ok);background:var(--ok-soft);border-radius:6px;padding:16px}
+.linkbox textarea{font-size:13px;min-height:84px;word-break:break-all;background:var(--sheet)}
+.linkbox ol{margin:0;padding-left:22px}
+.err{color:var(--warn);font-size:15px}
+.banner{max-width:880px;margin:0 auto 16px;background:var(--ok-soft);border:2px solid var(--ok);border-radius:6px;padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.banner b{font-family:var(--f-display)}
+body.review .submit, body.review .no-review{display:none}
+body.review input,body.review textarea,body.review select{opacity:1;color:var(--ink);-webkit-text-fill-color:var(--ink)}
+body.review textarea{resize:none}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+</style>
+
+<div class="banner" id="banner" hidden>
+  <div><b id="bName"></b><br><span class="muted" id="bMeta"></span></div>
+  <button type="button" id="exitReview">ทำใบงานของฉันเอง</button>
+</div>
+
+<main class="sheet">
+  <header>
+    <p class="meta">รายวิชาโครงงาน ม.4 · หน่วยที่ 1 ปฐมบทโครงงานและทีมนวัตกร · สัปดาห์ที่ 1 · คะแนนเต็ม 3 คะแนน</p>
+    <h1>ใบงานที่ 1.1 วิเคราะห์ตัวอย่างโครงงาน</h1>
+    <div class="info">
+      <label class="f name">ชื่อ-สกุล<input type="text" id="name" data-k="name" autocomplete="name"></label>
+      <label class="f">เลขที่<input type="text" id="no" data-k="no" inputmode="numeric"></label>
+      <label class="f">ชั้น<input type="text" id="cls" data-k="cls" placeholder="ม.4/"></label>
+    </div>
+    <div class="goals">
+      <p><b>คำชี้แจง</b> ทำงานเป็นคู่หรือกลุ่ม 3 คน แต่ส่งคนละ 1 ลิงก์ ตอบด้วยคำพูดของตนเอง ใช้ AI ได้เฉพาะช่วยอธิบายคำที่ไม่เข้าใจ และต้องบอกในตอนที่ 4</p>
+      <ul>
+        <li>อธิบายความหมายของโครงงานได้</li>
+        <li>ระบุองค์ประกอบสำคัญของโครงงานจากตัวอย่างจริงได้</li>
+        <li>จำแนกประเภทของโครงงานได้</li>
+      </ul>
+    </div>
+    <p class="hint no-review">คำตอบบันทึกไว้ในเครื่องนี้อัตโนมัติ ปิดหน้าแล้วกลับมาทำต่อได้</p>
+  </header>
+
+  <section class="part" aria-labelledby="p1">
+    <h2 id="p1"><span class="tag">ตอนที่ 1</span>โครงงานคืออะไร</h2>
+    <div class="q">
+      <p><b>1.1</b>เขียนความหมายของ “โครงงาน” ด้วยคำพูดของตนเอง 2–3 บรรทัด</p>
+      <textarea id="p11" data-k="p11" rows="3"></textarea>
+    </div>
+    <div class="q">
+      <p><b>1.2</b>เลือกความหมายที่ตรงกับคำศัพท์แต่ละคำ</p>
+      <div class="key" id="meanings"></div>
+      <div class="match" id="match"></div>
+    </div>
+    <div class="q">
+      <p><b>1.3</b>กิจกรรมใดเป็นหรือไม่เป็นโครงงาน เลือกคำตอบและบอกเหตุผลสั้น ๆ</p>
+      <div class="items" id="judge"></div>
+    </div>
+  </section>
+
+  <section class="part" aria-labelledby="p2">
+    <h2 id="p2"><span class="tag">ตอนที่ 2</span>ผังวิเคราะห์ตัวอย่างโครงงาน</h2>
+    <p class="muted">ศึกษาตัวอย่างโครงงาน 2 เรื่องที่ครูแจก แล้วเติมให้ครบ ช่องไหนหาไม่พบ ให้เขียนว่า “ไม่พบ” แล้วเดาว่าควรเป็นอย่างไร</p>
+    <div class="grid2" id="analysis">
+      <div class="g-row g-head"><div>องค์ประกอบ</div><div>โครงงานที่ 1</div><div>โครงงานที่ 2</div></div>
+    </div>
+  </section>
+
+  <section class="part" aria-labelledby="p3">
+    <h2 id="p3"><span class="tag">ตอนที่ 3</span>โครงงานที่ดีมีลักษณะอย่างไร</h2>
+    <div class="q">
+      <p><b>3.1</b>ให้คะแนนโครงงานทั้ง 2 เรื่อง ตั้งแต่ 1 (น้อย) ถึง 3 (มาก)</p>
+      <div class="tbl-wrap"><table id="rate">
+        <thead><tr><th>เกณฑ์</th><th class="num">โครงงานที่ 1</th><th class="num">โครงงานที่ 2</th></tr></thead>
+        <tbody></tbody>
+        <tfoot><tr><th>รวม (เต็ม 12)</th><td class="total" id="tot1">–</td><td class="total" id="tot2">–</td></tr></tfoot>
+      </table></div>
+    </div>
+    <div class="q">
+      <p><b>3.2</b>จากการเปรียบเทียบ โครงงานที่ดีควรมีลักษณะอย่างไร (อย่างน้อย 3 ข้อ)</p>
+      <ol class="lines">
+        <li><input type="text" id="g1" data-k="g1" aria-label="ลักษณะข้อที่ 1"></li>
+        <li><input type="text" id="g2" data-k="g2" aria-label="ลักษณะข้อที่ 2"></li>
+        <li><input type="text" id="g3" data-k="g3" aria-label="ลักษณะข้อที่ 3"></li>
+      </ol>
+    </div>
+    <div class="q">
+      <p><b>3.3</b>เรียงขั้นตอนการทำโครงงาน โดยเลือกลำดับ 1–6 ให้แต่ละขั้น</p>
+      <div class="order" id="order"></div>
+      <p class="hint warn" id="dupHint" hidden>มีลำดับซ้ำกัน ตรวจช่องที่เป็นสีแดง</p>
+    </div>
+  </section>
+
+  <section class="part" aria-labelledby="p4">
+    <h2 id="p4"><span class="tag">ตอนที่ 4</span>สะท้อนคิด</h2>
+    <div class="q">
+      <p><b>4.1</b>ปัญหาในโรงเรียน บ้าน หรือชุมชนที่ฉันอยากแก้ด้วยโครงงาน</p>
+      <label class="f">ปัญหาคือ<input type="text" id="q1" data-k="q1"></label>
+      <label class="f">เพราะ<input type="text" id="q1b" data-k="q1b"></label>
+    </div>
+    <div class="q">
+      <p><b>4.2</b>บทบาทในทีมที่ฉันถนัดที่สุด</p>
+      <div class="roles" id="roles"></div>
+      <label class="f">เหตุผล<input type="text" id="roleWhy" data-k="roleWhy"></label>
+    </div>
+    <div class="q">
+      <p><b>4.3</b>วันนี้ฉันใช้ AI หรือไม่</p>
+      <div class="seg" role="radiogroup" aria-label="การใช้ AI">
+        <label><input type="radio" name="ai" id="ai-no" data-k="ai" value="no">ไม่ใช้</label>
+        <label><input type="radio" name="ai" id="ai-yes" data-k="ai" value="yes">ใช้</label>
+      </div>
+      <div class="ai-extra" id="aiExtra" hidden>
+        <label class="f">เครื่องมือ<input type="text" id="aiTool" data-k="aiTool"></label>
+        <label class="f">ใช้เพื่อ<input type="text" id="aiFor" data-k="aiFor"></label>
+      </div>
+    </div>
+  </section>
+
+  <section class="submit" aria-labelledby="ps">
+    <h2 id="ps">ส่งใบงาน</h2>
+    <div class="progress"><span id="progText">ตอบแล้ว 0 ข้อ</span><div class="bar" aria-hidden="true"><i id="progBar"></i></div></div>
+    <div class="btns">
+      <button type="button" class="primary" id="makeLink">สร้างลิงก์ส่งงาน</button>
+      <button type="button" id="clearAll">ล้างคำตอบทั้งหมด</button>
+    </div>
+    <p class="err" id="err" hidden></p>
+    <div class="linkbox" id="linkbox" hidden>
+      <h3>ลิงก์ใบงานของคุณ</h3>
+      <textarea id="link" readonly aria-label="ลิงก์ใบงาน"></textarea>
+      <div class="btns"><button type="button" class="primary" id="copy">คัดลอกลิงก์</button></div>
+      <p class="hint" id="copyMsg" role="status"></p>
+      <ol>
+        <li>กด “คัดลอกลิงก์”</li>
+        <li>เปิด Padlet ของห้องที่ครูให้ไว้ แล้วสร้างโพสต์ใหม่</li>
+        <li>ตั้งหัวข้อเป็น ชื่อ เลขที่ และชั้น แล้ววางลิงก์ในโพสต์</li>
+      </ol>
+      <p class="hint">ถ้าแก้คำตอบหลังจากนี้ ต้องกดสร้างลิงก์ใหม่และส่งลิงก์ใหม่แทน</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var BASE = 'https://claude.ai/artifact/J1AgL8MdognSN8Ctg9bnqz';
+  var DRAFT = 'ws11-draft-v1';
+
+  var terms = ['ที่มาและความสำคัญ','วัตถุประสงค์','ต้นแบบ','การทดสอบ','ผลการทดลอง / สรุปผล'];
+  var meanings = [['ก','สิ่งที่ต้องการให้เกิดขึ้นเมื่อทำโครงงานเสร็จ'],['ข','ชิ้นงานรุ่นแรกที่สร้างขึ้นเพื่อทดลองใช้'],['ค','เหตุผลว่าทำไมปัญหานี้ต้องได้รับการแก้ไข'],['ง','ข้อสรุปที่ได้จากข้อมูลการทดสอบ'],['จ','การลองใช้งานจริงและเก็บข้อมูลว่าดีหรือไม่']];
+  var acts = ['ค้นข้อมูลเรื่องพลังงานแสงอาทิตย์จากอินเทอร์เน็ตแล้วทำรายงานสรุป','สร้างเครื่องรดน้ำต้นไม้อัตโนมัติ แล้วทดสอบปริมาณน้ำที่ประหยัดได้ใน 2 สัปดาห์','ทำแอปนัดคิวร้านค้าในโรงอาหาร แล้วให้นักเรียน 30 คนทดลองใช้และประเมิน','ประดิษฐ์ดอกไม้จากขวดพลาสติกตามคลิปในยูทูบ','ทดลองเปรียบเทียบสารสกัดจากพืช 3 ชนิดในการไล่มด'];
+  var letters = ['ก','ข','ค','ง','จ'];
+  var rows = ['ชื่อโครงงาน','ประเภทโครงงาน','ปัญหาหรือที่มา (ใครเดือดร้อน เรื่องอะไร)','วัตถุประสงค์','วิธีแก้ปัญหา / สิ่งที่สร้างขึ้น','วิธีทดสอบ (ทดสอบอะไร กับใคร กี่ครั้ง)','ผลที่ได้ (ตัวเลขหรือข้อสรุป)','เทคโนโลยีหรือเครื่องมือที่ใช้','จุดเด่นที่ชอบ 1 ข้อ','สิ่งที่ควรพัฒนาเพิ่ม 1 ข้อ'];
+  var types = ['สำรวจ','ทดลอง','สิ่งประดิษฐ์','ซอฟต์แวร์ / แอป','ทฤษฎี','ไม่พบ'];
+  var crit = ['แก้ปัญหาจริงที่มีคนเดือดร้อน','มีความคิดใหม่หรือแตกต่างจากเดิม','มีการทดสอบและใช้ข้อมูลยืนยันผล','นักเรียน ม.4 ทำได้จริงใน 1 ภาคเรียน'];
+  var steps = ['ทดสอบ ประเมินผล และปรับปรุง','ระบุปัญหา','นำเสนอผลงาน','รวบรวมข้อมูลและแนวคิด','วางแผนและสร้างต้นแบบ','ออกแบบวิธีแก้ปัญหา'];
+  var roles = [['lead','หัวหน้าโครงการ (วางแผน ติดตามงาน)'],['build','ผู้ออกแบบ / สร้าง (ประดิษฐ์ เขียนโค้ด)'],['record','ผู้บันทึกข้อมูล (จดบันทึก เก็บผล ทำรายงาน)'],['present','ผู้นำเสนอ (ออกแบบสื่อ พูดนำเสนอ)']];
+
+  function el(tag, attrs, html){var e=document.createElement(tag);for(var k in attrs){if(k==='dataK')e.dataset.k=attrs[k];else e.setAttribute(k,attrs[k]);}if(html!=null)e.innerHTML=html;return e;}
+  function opts(list, blank){return (blank?'<option value="">'+blank+'</option>':'')+list.map(function(v){return '<option value="'+v+'">'+v+'</option>';}).join('');}
+
+  // 1.2
+  var mEl=document.getElementById('meanings');
+  meanings.forEach(function(m){mEl.appendChild(el('span',{},'<b>'+m[0]+'</b>'+m[1]));});
+  var match=document.getElementById('match');
+  terms.forEach(function(t,i){
+    match.appendChild(el('label',{for:'m'+(i+1)},(i+1)+'. '+t));
+    match.appendChild(el('select',{id:'m'+(i+1),dataK:'m'+(i+1)},opts(letters,'เลือก')));
+  });
+  // 1.3
+  var judge=document.getElementById('judge');
+  acts.forEach(function(a,i){
+    var n=i+1, box=el('div',{class:'item'});
+    box.appendChild(el('p',{},'<b>'+letters[i]+'.</b> '+a));
+    var row=el('div',{class:'row'});
+    var seg=el('div',{class:'seg',role:'radiogroup','aria-label':'ข้อ '+letters[i]});
+    seg.appendChild(el('label',{},'<input type="radio" name="c'+n+'" id="c'+n+'-y" data-k="c'+n+'" value="y">เป็น'));
+    seg.appendChild(el('label',{},'<input type="radio" name="c'+n+'" id="c'+n+'-n" data-k="c'+n+'" value="n">ไม่เป็น'));
+    row.appendChild(seg);
+    row.appendChild(el('input',{type:'text',id:'r'+n,dataK:'r'+n,placeholder:'เหตุผล','aria-label':'เหตุผลข้อ '+letters[i]}));
+    box.appendChild(row); judge.appendChild(box);
+  });
+  // part 2
+  var an=document.getElementById('analysis');
+  rows.forEach(function(r,i){
+    var n=i+1, row=el('div',{class:'g-row'});
+    row.appendChild(el('div',{class:'lab'},r));
+    [1,2].forEach(function(c){
+      var cell=el('div',{});
+      cell.appendChild(el('span',{class:'sub'},'โครงงานที่ '+c));
+      var id='a'+n+'_'+c, lab=r+' โครงงานที่ '+c;
+      if(n===2) cell.appendChild(el('select',{id:id,dataK:id,'aria-label':lab},opts(types,'เลือกประเภท')));
+      else cell.appendChild(el('textarea',{id:id,dataK:id,rows:'2','aria-label':lab}));
+      row.appendChild(cell);
+    });
+    an.appendChild(row);
+  });
+  // 3.1
+  var tb=document.querySelector('#rate tbody');
+  crit.forEach(function(c,i){
+    var tr=el('tr',{}); tr.appendChild(el('td',{},c));
+    [1,2].forEach(function(p){var td=el('td',{class:'num'});td.appendChild(el('select',{id:'s'+(i+1)+'_'+p,dataK:'s'+(i+1)+'_'+p,'aria-label':c+' โครงงานที่ '+p},opts(['1','2','3'],'–')));tr.appendChild(td);});
+    tb.appendChild(tr);
+  });
+  // 3.3
+  var ord=document.getElementById('order');
+  steps.forEach(function(s,i){
+    ord.appendChild(el('select',{id:'o'+(i+1),dataK:'o'+(i+1),'aria-label':'ลำดับของ '+s},opts(['1','2','3','4','5','6'],'ลำดับ')));
+    ord.appendChild(el('span',{},s));
+  });
+  // 4.2
+  var rl=document.getElementById('roles');
+  roles.forEach(function(r){rl.appendChild(el('label',{},'<input type="radio" name="role" id="role-'+r[0]+'" data-k="role" value="'+r[0]+'"><span>'+r[1]+'</span>'));});
+
+  var fields=[].slice.call(document.querySelectorAll('[data-k]'));
+  var countKeys=[]; fields.forEach(function(f){var k=f.dataset.k;if(['name','no','cls','aiTool','aiFor'].indexOf(k)<0&&countKeys.indexOf(k)<0)countKeys.push(k);});
+
+  function collect(){var d={};fields.forEach(function(f){var k=f.dataset.k;if(f.type==='radio'){if(f.checked)d[k]=f.value;}else if(f.value.trim())d[k]=f.value.trim();});return d;}
+  function apply(d){fields.forEach(function(f){var k=f.dataset.k;if(f.type==='radio')f.checked=(d[k]===f.value);else f.value=d[k]||'';});update();}
+
+  function update(){
+    var d=collect();
+    [1,2].forEach(function(p){var t=0,n=0;crit.forEach(function(_,i){var v=d['s'+(i+1)+'_'+p];if(v){t+=+v;n++;}});document.getElementById('tot'+p).textContent=n?t:'–';});
+    document.getElementById('aiExtra').hidden=(d.ai!=='yes');
+    var seen={},dup=false;steps.forEach(function(_,i){var v=d['o'+(i+1)];if(v){seen[v]=(seen[v]||0)+1;}});
+    steps.forEach(function(_,i){var s=document.getElementById('o'+(i+1));var on=s.value&&seen[s.value]>1;s.classList.toggle('dup',!!on);if(on)dup=true;});
+    document.getElementById('dupHint').hidden=!dup;
+    var done=countKeys.filter(function(k){return d[k];}).length;
+    document.getElementById('progText').textContent='ตอบแล้ว '+done+' จาก '+countKeys.length+' ช่อง';
+    document.getElementById('progBar').style.width=(done/countKeys.length*100)+'%';
+    return d;
+  }
+
+  // base32 over compressed bytes, so the code is only letters and digits
+  var A='abcdefghijklmnopqrstuvwxyz234567';
+  function b32(bytes){var out='',bits=0,val=0;for(var i=0;i<bytes.length;i++){val=((val<<8)|bytes[i])&0xffff;bits+=8;while(bits>=5){out+=A[(val>>>(bits-5))&31];bits-=5;}}if(bits>0)out+=A[(val<<(5-bits))&31];return out;}
+  function unb32(s){var bytes=[],bits=0,val=0;for(var i=0;i<s.length;i++){var x=A.indexOf(s[i]);if(x<0)throw new Error('bad');val=((val<<5)|x)&0xffff;bits+=5;if(bits>=8){bytes.push((val>>>(bits-8))&255);bits-=8;}}return new Uint8Array(bytes);}
+  function encode(d){return 'w1-'+b32(LZString.compressToUint8Array(JSON.stringify({v:1,t:Date.now(),d:d})));}
+  function decode(code){var json=LZString.decompressFromUint8Array(unb32(code.slice(3)));var o=JSON.parse(json);if(!o||!o.d)throw new Error('empty');return o;}
+
+  function save(){try{localStorage.setItem(DRAFT,JSON.stringify(collect()));}catch(e){}}
+  function load(){try{var s=localStorage.getItem(DRAFT);return s?JSON.parse(s):{};}catch(e){return {};}}
+
+  var reviewing=false, timer;
+  document.addEventListener('input',function(e){if(reviewing||!e.target.dataset||!e.target.dataset.k)return;update();clearTimeout(timer);timer=setTimeout(save,300);document.getElementById('linkbox').hidden=true;});
+  document.addEventListener('change',function(e){if(reviewing||!e.target.dataset||!e.target.dataset.k)return;update();save();document.getElementById('linkbox').hidden=true;});
+
+  function setReview(on, o){
+    reviewing=on;document.body.classList.toggle('review',on);
+    fields.forEach(function(f){f.disabled=on;});
+    var b=document.getElementById('banner');b.hidden=!on;
+    if(on){
+      var d=o.d;document.getElementById('bName').textContent='ใบงานของ '+(d.name||'(ไม่ระบุชื่อ)');
+      var when=new Date(o.t);
+      document.getElementById('bMeta').textContent='เลขที่ '+(d.no||'–')+' · ชั้น '+(d.cls||'–')+' · สร้างลิงก์เมื่อ '+when.toLocaleString('th-TH',{dateStyle:'medium',timeStyle:'short'})+' · ดูอย่างเดียว';
+      apply(d);
+    }
+  }
+
+  function start(){
+    var h=(location.hash||'').slice(1);
+    if(h.indexOf('w1-')===0){
+      try{setReview(true,decode(h));return;}
+      catch(e){setReview(false);apply(load());var er=document.getElementById('err');er.hidden=false;er.textContent='เปิดลิงก์ใบงานนี้ไม่ได้ ลิงก์อาจถูกตัดไม่ครบ ให้นักเรียนคัดลอกลิงก์ใหม่ทั้งหมด';return;}
+    }
+    setReview(false);apply(load());
+  }
+  window.addEventListener('hashchange',start);
+  document.getElementById('exitReview').addEventListener('click',function(){location.hash='';start();window.scrollTo(0,0);});
+
+  document.getElementById('makeLink').addEventListener('click',function(){
+    var d=update(), er=document.getElementById('err');
+    var miss=[];if(!d.name)miss.push('ชื่อ-สกุล');if(!d.no)miss.push('เลขที่');if(!d.cls)miss.push('ชั้น');
+    if(miss.length){er.hidden=false;er.textContent='กรอก '+miss.join(' ')+' ที่หัวใบงานก่อน แล้วกดสร้างลิงก์อีกครั้ง';document.getElementById('linkbox').hidden=true;document.getElementById(miss[0]==='ชื่อ-สกุล'?'name':miss[0]==='เลขที่'?'no':'cls').focus();return;}
+    if(typeof LZString==='undefined'){er.hidden=false;er.textContent='หน้าเว็บยังโหลดไม่ครบ ลองรีเฟรชหน้าแล้วกดอีกครั้ง (คำตอบยังอยู่)';return;}
+    er.hidden=true;
+    var link=BASE+'#'+encode(d);
+    var t=document.getElementById('link');t.value=link;
+    document.getElementById('copyMsg').textContent='';
+    var lb=document.getElementById('linkbox');lb.hidden=false;lb.scrollIntoView({block:'nearest'});
+  });
+  document.getElementById('copy').addEventListener('click',function(){
+    var t=document.getElementById('link'),msg=document.getElementById('copyMsg');
+    function fallback(){t.focus();t.select();msg.textContent='คัดลอกอัตโนมัติไม่ได้ ลิงก์ถูกเลือกไว้แล้ว กด Ctrl+C หรือแตะค้างแล้วเลือก คัดลอก';}
+    try{navigator.clipboard.writeText(t.value).then(function(){msg.textContent='คัดลอกลิงก์แล้ว นำไปวางใน Padlet ได้เลย';},fallback);}catch(e){fallback();}
+  });
+  var clearArmed=false,clearT;
+  document.getElementById('clearAll').addEventListener('click',function(){
+    var b=this;
+    if(!clearArmed){clearArmed=true;b.textContent='กดอีกครั้งเพื่อยืนยันการล้าง';clearT=setTimeout(function(){clearArmed=false;b.textContent='ล้างคำตอบทั้งหมด';},4000);return;}
+    clearTimeout(clearT);clearArmed=false;b.textContent='ล้างคำตอบทั้งหมด';apply({});save();document.getElementById('linkbox').hidden=true;
+  });
+
+  start();
+})();
+</script>
+
+</body></html>
